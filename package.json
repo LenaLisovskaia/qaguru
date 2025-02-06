@@ -1,0 +1,20 @@
+{
+  "name": "playwright_qaguru",
+  "version": "1.0.0",
+  "description": "playwright_qaguru",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "test": "npm run build && npx playwright test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@faker-js/faker": "^9.4.0",
+    "@playwright/test": "^1.50.1",
+    "@types/node": "^22.13.1",
+    "typescript": "^5.7.3"
+  }
+}
