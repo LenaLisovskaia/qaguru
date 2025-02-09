@@ -1,43 +1,50 @@
-import { Page } from '@playwright/test';
+import { Page, Locator, expect } from '@playwright/test';
 
 export class ArticlePage {
   readonly page: Page;
+  private globalFeedButton: Locator;
+  private articlePreview: Locator;
+  private commentBox: Locator;
+  private postCommentButton: Locator;
+  private commentList: Locator;
 
   constructor(page: Page) {
     this.page = page;
+    this.globalFeedButton = page.getByRole('button', { name: 'Global Feed' });
+    this.articlePreview = page.locator('.article-preview').first();
+    this.commentBox = page.locator('textarea[placeholder="Write a comment..."]');
+    this.postCommentButton = page.getByRole('button', { name: 'Post Comment' });
+    this.commentList = page.locator('.card-text');
   }
 
-  async openFirstArticleFromProfile(): Promise<void> {
+  async openFirstArticle(): Promise<void> {
     await this.page.waitForLoadState('domcontentloaded');
-    await this.page.waitForSelector('.nav-link', { timeout: 15000 });
+    await this.globalFeedButton.waitFor({ state: 'visible' });
+    await this.globalFeedButton.click();
+    await this.page.waitForSelector('.article-preview');
 
-    const userDropdown = this.page.getByText('Jane', { exact: true });
-    await userDropdown.waitFor({ state: 'attached', timeout: 15000 });
-    await userDropdown.click();
-
-    const profileLink = this.page.getByRole('link', { name: ' Profile' });
-    await profileLink.waitFor({ state: 'attached', timeout: 10000 });
-    await profileLink.click();
-    await this.page.waitForURL(/.*\/profile\//);
-
-    await this.page.waitForSelector('.article-preview', { timeout: 15000 });
-    const articlesCount = await this.page.locator('.article-preview').count();
-
-    if (articlesCount === 0) {
-      throw new Error('No articles found!');
-    }
-
-    await this.page.locator('.article-preview').first().click();
+    await this.articlePreview.waitFor({ state: 'visible' });
+    await this.articlePreview.click();
     await this.page.waitForURL(/.*\/article\//);
   }
 
   async addComment(commentText: string): Promise<void> {
-    await this.page.waitForSelector('textarea[placeholder="Write a comment..."]', { timeout: 5000 });
-    await this.page.getByRole('textbox', { name: 'Write a comment...' }).fill(commentText);
-    await this.page.getByRole('button', { name: 'Post Comment' }).click();
+    await this.page.waitForSelector('textarea[placeholder="Write a comment..."]', { state: 'visible' });
+
+    await this.commentBox.fill(commentText);
+    await this.postCommentButton.click();
+
+    await this.page.waitForFunction(
+      (commentText) => {
+        return [...document.querySelectorAll('.card-text')].some(
+          (el) => el.textContent?.trim() === commentText
+        );
+      },
+      commentText
+    );
   }
 
-  async getLastCommentText() {
-    return this.page.locator('div.card-text').last();
+  async getLastCommentText(): Promise<string> {
+    return await this.commentList.last().innerText();
   }
 }
