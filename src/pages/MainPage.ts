@@ -1,19 +1,25 @@
 import { Page } from '@playwright/test';
 
 export class MainPage {
-  readonly page: Page;
-  readonly signupButton;
+    private page: Page;
 
-  constructor(page: Page) {
-    this.page = page;
-    this.signupButton = page.getByRole('link', { name: 'Sign up' });
-  }
+    constructor(page: Page) {
+        this.page = page;
+    }
 
-  async gotoRegister() {
-    await this.signupButton.click();
-  }
+    async open(url: string) {
+        await this.page.goto(url);
+    }
 
-  async open(url: string) {
-    await this.page.goto(url);
-  }
+    async gotoRegister() {
+        await this.page.getByRole('link', { name: 'Sign up' }).click();
+    }
+
+    async gotoLogin() {
+        const loginButton = this.page.getByRole('link', { name: 'Login' });
+
+        await loginButton.waitFor({ state: 'attached' }); // Убедимся, что элемент не исчезает
+        await loginButton.waitFor({ state: 'visible' });  // Ждем, пока элемент будет видимым
+        await loginButton.click(); // Кликаем, когда все стабильно
+    }
 }

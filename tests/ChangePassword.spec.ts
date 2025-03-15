@@ -1,38 +1,52 @@
 import { test, expect } from '@playwright/test';
-import { LoginPage } from '../src/pages/LoginPage';
 import { faker } from '@faker-js/faker';
+import { MainPage } from '../src/pages/MainPage';
+import { RegisterPage } from '../src/pages/RegisterPage';
+import { SettingsPage } from '../src/pages/SettingsPage';
+import { LoginPage } from '../src/pages/LoginPage';
+import { YourFeedPage } from '../src/pages/YourFeedPage';
 
-const email = 'l_the_q@mail.ru';
-const oldPassword = 'newpassword';
-const newPassword = faker.internet.password(12);
+const URL_UI = 'https://realworld.qa.guru';
 
-test('User can change password and log in with new one, then revert password', async ({ page }) => {
-  const loginPage = new LoginPage(page);
+test.describe('User Registration and Password Update', () => {
+    let user: { username: string; email: string; password: string };
+    let newPassword: string;
 
-  await loginPage.login(email, oldPassword);
+    test.beforeEach(async ({ page }) => {
+        const mainPage = new MainPage(page);
+        const registerPage = new RegisterPage(page);
 
-  await page.getByRole('img', { name: 'Jane' }).click();
-  await page.getByRole('link', { name: ' Settings' }).click();
+        user = {
+            username: faker.person.firstName(),
+            email: faker.internet.email(),
+            password: faker.internet.password({ length: 10 }),
+        };
 
-  await page.getByRole('textbox', { name: 'Password' }).fill(newPassword);
-  await page.getByRole('button', { name: 'Update Settings' }).click();
+        newPassword = faker.internet.password({ length: 12 });
 
-  await loginPage.logout();
+        await mainPage.open(URL_UI);
+        await mainPage.gotoRegister();
+        await registerPage.register(user.username, user.email, user.password);
+    });
 
-  await loginPage.login(email, newPassword);
+    test('User should be able to update password and login with new credentials', async ({ page }) => {
+        const yourFeedPage = new YourFeedPage(page);
+        const settingsPage = new SettingsPage(page);
+        const mainPage = new MainPage(page);
+        const loginPage = new LoginPage(page);
 
-  await expect(page.getByRole('navigation')).toContainText('Jane');
+        await yourFeedPage.waitForProfileToLoad();
+        expect(await yourFeedPage.getProfileName()).toBe(user.username);
 
-  await page.getByRole('img', { name: 'Jane' }).click();
-  await page.getByRole('link', { name: ' Settings' }).click();
+        await yourFeedPage.gotoSettings();
+        await settingsPage.changePassword(newPassword);
 
-  await page.getByRole('textbox', { name: 'Password' }).fill(oldPassword);
-  await page.getByRole('button', { name: 'Update Settings' }).click();
+        await yourFeedPage.logout();
 
+        await mainPage.gotoLogin();
+        await loginPage.login(user.email, newPassword);
 
-  await loginPage.logout();
-
-  
-  await loginPage.login(email, oldPassword);
-  await expect(page.getByRole('navigation')).toContainText('Jane');
+        await yourFeedPage.waitForProfileToLoad();
+        expect(await yourFeedPage.getProfileName()).toBe(user.username);
+    });
 });
