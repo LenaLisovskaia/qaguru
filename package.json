@@ -4,15 +4,16 @@
   "description": "playwright_qaguru",
   "main": "index.js",
   "type": "module",
-  "scripts": {
-    "build": "tsc",
-    "test": "npm run build && npx playwright test"
-  },
+    "scripts": {
+        "build": "tsc",
+        "test": "npm run build && npx playwright test",
+        "test:ci": "npx playwright test && npx playwright show-report"
+    },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@faker-js/faker": "^9.4.0",
+    "@faker-js/faker": "^9.5.0",
     "@playwright/test": "^1.50.1",
     "@types/node": "^22.13.1",
     "typescript": "^5.7.3"
