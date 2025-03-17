@@ -1,8 +1,8 @@
-# playwright_qaguru
+# qaguru
 playwright_qaguru
 
-3 функциональных теста для https://realworld.qa.guru/, используя паттерн page object
+3 automated tests for https://realworld.qa.guru/, using page object
 
-- Пользователь может опубликовать статью;
-- Пользователь может оставить комментарий к статье;
-- Пользователь может изменить пароль (не забудьте проверить, что можно залогиниться с новым паролем).
+- User can sign up and change password;
+- user can sign up and publish a new article;
+- user can write a comment to an article.
