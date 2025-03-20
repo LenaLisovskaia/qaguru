@@ -2,6 +2,7 @@ import { Page, Locator } from '@playwright/test';
 
 export class EditorPage {
   readonly page: Page;
+  private newArticleButton: Locator;
   private articleTitleField: Locator;
   private articleDescriptionField: Locator;
   private articleBodyField: Locator;
@@ -10,6 +11,7 @@ export class EditorPage {
 
   constructor(page: Page) {
     this.page = page;
+    this.newArticleButton = page.locator('a[href="#/editor"]');
     this.articleTitleField = page.getByPlaceholder('Article Title');
     this.articleDescriptionField = page.getByPlaceholder(`What's this article about?`); 
     this.articleBodyField = page.getByPlaceholder('Write your article (in markdown)'); 
@@ -18,13 +20,13 @@ export class EditorPage {
   }
 
   async goto(): Promise<void> {
-    await this.page.goto('/#/editor');
-    await this.page.waitForURL('**/#/editor'); 
+    await this.newArticleButton.isVisible();
+    await this.newArticleButton.click();
+    await this.articleTitleField.waitFor({ state: 'visible' });
+  
   }
 
   async createArticle(title: string, description: string, body: string, tags: string): Promise<void> {
-   
-    await this.articleTitleField.waitFor({ state: 'visible' });
     await this.articleTitleField.fill(title);
     await this.articleDescriptionField.fill(description);
     await this.articleBodyField.fill(body);

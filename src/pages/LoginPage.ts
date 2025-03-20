@@ -1,18 +1,17 @@
-import { Page, Locator, expect } from '@playwright/test';
+import { Page, Locator } from '@playwright/test';
 
 export class LoginPage {
   readonly page: Page;
   private emailField: Locator;
   private passwordField: Locator;
   private loginButton: Locator;
-  private yourFeedButton: Locator;
+ 
 
   constructor(page: Page) {
     this.page = page;
     this.emailField = page.getByRole('textbox', { name: 'Email' });
     this.passwordField = page.getByRole('textbox', { name: 'Password' });
     this.loginButton = page.getByRole('button', { name: 'Login' });
-    this.yourFeedButton = page.getByRole('button', {name: 'Your Feed' });
   }
 
   async goto(): Promise<void> {
@@ -25,9 +24,6 @@ export class LoginPage {
     await this.emailField.fill(email);
     await this.passwordField.fill(password);
     await this.loginButton.click();
-   
-    await this.page.waitForURL('**/#/');
-    
-    await expect(this.yourFeedButton).toBeVisible();
+    await this.page.waitForURL(/realworld.qa.guru\/#?/);
   }
 }

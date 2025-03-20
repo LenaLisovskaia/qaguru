@@ -2,11 +2,11 @@ import { Page, Locator } from '@playwright/test';
 
 export class ArticlePage {
   readonly page: Page;
-  private globalFeedButton: Locator;
   private articleTitle: Locator;
   private articleDescription: Locator;
   private articleBody: Locator;
   private articleTags: Locator;
+  private globalFeedButton: Locator;
   private articlePreview: Locator;
   private commentBox: Locator;
   private postCommentButton: Locator;
@@ -15,7 +15,7 @@ export class ArticlePage {
   constructor(page: Page) {
     this.page = page;
     this.globalFeedButton = page.getByRole('button', { name: 'Global Feed' });
-    this.articlePreview = page.locator('.preview-link').first();
+    this.articlePreview = page.locator('.article-preview').first();
     this.articleTitle = page.locator('.article-page h1');
     this.articleDescription = page.locator('.article-meta + div p'); 
     this.articleBody = page.locator('.article-content p'); 
@@ -26,8 +26,7 @@ export class ArticlePage {
   }
 
   async waitForArticlePage(): Promise<void> {
-      await this.page.waitForURL(/.*#\/article\/.*/);
-      await this.page.waitForLoadState('domcontentloaded');
+      await this.page.waitForURL('**/#/article/**');
       await this.page.waitForSelector('.article-page', { state: 'visible' });
     }
 
@@ -47,22 +46,29 @@ export class ArticlePage {
   }
 
   async openFirstArticle(): Promise<void> {
+    await this.page.waitForLoadState('domcontentloaded');
     await this.globalFeedButton.waitFor({ state: 'visible' });
     await this.globalFeedButton.click();
     await this.page.waitForSelector('.article-preview');
-
     await this.articlePreview.waitFor({ state: 'visible' });
     await this.articlePreview.click();
-    await this.page.waitForURL(/.*#\/article\/.*/,);
+    await this.articleTitle.isVisible();
   }
 
   async addComment(commentText: string): Promise<void> {
-    await this.commentBox.waitFor({ state: 'visible' });
+    await this.commentBox.isVisible()
     await this.commentBox.fill(commentText);
     await this.postCommentButton.click();
   }
 
-  async getLastCommentText(): Promise<string> {
-    return await this.commentList.last().innerText();
+  async getLastCommentText(expectedComment?: string): Promise<string> {
+    const lastComment = await this.commentList.last().innerText();
+
+    if (expectedComment && !lastComment.includes(expectedComment)) {
+        throw new Error(`Expected comment "${expectedComment}" does not match "${lastComment}"`);
+    }
+
+    return lastComment;
   }
+
 }

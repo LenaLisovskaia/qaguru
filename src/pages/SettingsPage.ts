@@ -2,10 +2,9 @@ import { Page, Locator,expect } from '@playwright/test';
 
 export class SettingsPage {
   readonly page: Page;
-  private expectedEmail: string;
   private profileMenuButton: Locator;
+  private yourFeedButton: Locator
   private dropdownMenu: Locator;
-  private profileImage: Locator;
   private settingsLink: Locator;
   private emailField: Locator;
   private nameField: Locator;
@@ -16,25 +15,27 @@ export class SettingsPage {
   constructor(page: Page, expectedEmail:string) {
     this.page = page;
     this.expectedEmail = expectedEmail;
-    this.profileMenuButton = page.locator('.nav-link.dropdown-toggle');
     this.dropdownMenu = page.locator('.dropdown-menu');
-    this.profileImage = page.getByRole('img', { name: 'Jane' }); 
+    this.profileMenuButton = page.locator("div.nav-link.dropdown-toggle.cursor-pointer");
     this.settingsLink = page.getByRole('link', { name: ' Settings' });
     this.emailField = page.locator('//input[@placeholder="Email"]'); 
     this.nameField = page.locator('//input[@placeholder="Your Name"]'); 
     this.passwordField = page.getByPlaceholder('Password'); 
     this.updateSettingsButton = page.getByRole('button', { name: 'Update Settings' }); 
     this.logoutButton = page.locator('.dropdown-item:has-text("Logout")'); 
+    this.yourFeedButton = page.getByRole('button', {name: 'Your Feed'});
   }
 
   async goto(): Promise<void> {
-    await this.profileImage.click();
+    await this.profileMenuButton.waitFor({state: 'visible'});
+    await this.profileMenuButton.click()
     await this.settingsLink.click();
     await this.page.waitForURL('**/#/settings'); 
   }
 
   async verifyUserLoggedIn(): Promise<void> {
-    await expect(this.profileImage).toBeVisible();
+    await this.profileMenuButton.waitFor({state: 'visible'});
+    await this.yourFeedButton.waitFor({state: 'visible'});
    
   }
 
