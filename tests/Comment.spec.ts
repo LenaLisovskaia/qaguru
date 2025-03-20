@@ -30,6 +30,6 @@ test('User can leave a random comment on an article', async ({ page }) => {
 
   await articlePage.addComment(commentText);
   
-  await articlePage.getLastCommentText(commentText); 
-
+  const lastComment = await articlePage.getLastCommentText();
+  await expect(lastComment).toBe(commentText);
 })

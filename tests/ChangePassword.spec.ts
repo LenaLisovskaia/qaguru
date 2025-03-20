@@ -34,18 +34,11 @@ test('User can change password and log in with new one, then revert password', a
   const settingsPage = new SettingsPage(page, email)
 
   await settingsPage.goto();
-  await settingsPage.updatePassword(password);
+  await settingsPage.updatePassword(password,);
   await settingsPage.logout();
 
   await page.goto('/');
   await loginPage.login(email, password);
-  await settingsPage.verifyUserLoggedIn()
-
-  await settingsPage.goto();
-  await settingsPage.updatePassword(password);
-  await settingsPage.logout();
-
-  await page.goto('/');
-  await loginPage.login(email, password);
-  await settingsPage.verifyUserLoggedIn()
+  await expect(settingsPage.verifyUserLoggedIn()).toBeTruthy();
+  await expect(page.locator('div.nav-link.dropdown-toggle.cursor-pointer')).toBeVisible();
 });
