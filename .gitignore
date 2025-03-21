@@ -1,0 +1,13 @@
+.DS_Store
+.Trash/
+.Library/
+.Movies/
+.Music/
+.Pictures/
+.Postman/
+.Public/
+.PycharmProjects/
+.npm/
+.node_repl_history
+.ssh/
+.zsh_history
