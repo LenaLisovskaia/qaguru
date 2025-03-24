@@ -11,3 +11,6 @@
 .node_repl_history
 .ssh/
 .zsh_history
+node_modules/
+playwright-report/
+test-results/
