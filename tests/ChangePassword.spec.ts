@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { MainPage, SignUpPage, LoginPage, SettingsPage, EditorPage, ArticlePage } from '../src/pages';
-import { UserBuilder } from '../tests/builders';
+import { UserBuilder } from '../builders';
 
 
 test.describe('Change Password Tests', () => {

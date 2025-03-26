@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { MainPage, SignUpPage, ArticlePage } from '../src/pages';
-import { UserBuilder } from '../tests/builders'
+import { UserBuilder } from '../builders'
 import { faker } from '@faker-js/faker';
 
 test.describe('Commenting on the Article Tests', () => {

@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { MainPage, SignUpPage, EditorPage, ArticlePage } from '../src/pages';
-import { UserBuilder, ArticleBuilder } from '../tests/builders'
+import { UserBuilder, ArticleBuilder } from '../builders'
 
 test.describe('Article Publishing Tests', () => {
   let user: { username: string; email: string; password: string };
